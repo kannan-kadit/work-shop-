@@ -31,6 +31,7 @@ interface JobCardListProps {
   onViewInvoice: (card: JobCard) => void;
   onUpdateStatus: (id: string, newStatus: ServiceStatus) => void;
   searchQuery: string;
+  onNavigateTab?: (tab: 'dashboard' | 'inventory' | 'mechanic' | 'customer' | 'mobile-sim' | 'breakdown') => void;
 }
 
 const STAGES: { status: ServiceStatus; label: string; color: string; bg: string; border: string }[] = [
@@ -60,6 +61,7 @@ export const JobCardList: React.FC<JobCardListProps> = ({
   onViewInvoice,
   onUpdateStatus,
   searchQuery,
+  onNavigateTab,
 }) => {
   const [viewMode, setViewMode] = useState<'kanban' | 'table'>('kanban');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('ALL');
@@ -91,72 +93,140 @@ export const JobCardList: React.FC<JobCardListProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Top Banner Stats */}
+      {/* Top Banner Interactive Metric Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="bg-white border border-slate-200 p-3.5 rounded-2xl shadow-sm">
+        {/* Card 1: Today's Intake */}
+        <div
+          onClick={() => setSelectedStatusFilter('ALL')}
+          className={`bg-white border rounded-2xl p-3.5 shadow-sm transition-all duration-300 cursor-pointer transform hover:-translate-y-1.5 hover:shadow-lg hover:shadow-blue-500/10 hover:border-blue-400 group active:scale-95 ${
+            selectedStatusFilter === 'ALL' ? 'ring-2 ring-blue-500/50 border-blue-400 bg-blue-50/20' : 'border-slate-200 hover:bg-blue-50/30'
+          }`}
+          title="Click to view All / Today's Intake"
+        >
           <div className="text-[11px] font-bold text-slate-500 flex items-center justify-between">
             <span>Today's Intake</span>
-            <Bike className="w-4 h-4 text-blue-600" />
+            <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600 group-hover:scale-125 group-hover:rotate-12 transition-transform duration-300">
+              <Bike className="w-4 h-4" />
+            </div>
           </div>
           <div className="text-2xl font-black text-slate-900 font-display mt-1">
             {stats.todayVehiclesCount}
           </div>
-          <div className="text-[10px] text-blue-600 font-bold mt-0.5">Kottar Bay</div>
+          <div className="text-[10px] text-blue-600 font-bold mt-0.5 flex items-center justify-between">
+            <span>Kottar Bay</span>
+            <span className="opacity-0 group-hover:opacity-100 transition text-[9px] text-blue-500 font-semibold">View All →</span>
+          </div>
         </div>
 
-        <div className="bg-white border border-slate-200 p-3.5 rounded-2xl shadow-sm">
+        {/* Card 2: On Bay / Servicing */}
+        <div
+          onClick={() => setSelectedStatusFilter('In Progress')}
+          className={`bg-white border rounded-2xl p-3.5 shadow-sm transition-all duration-300 cursor-pointer transform hover:-translate-y-1.5 hover:shadow-lg hover:shadow-amber-500/15 hover:border-amber-400 group active:scale-95 ${
+            selectedStatusFilter === 'In Progress' ? 'ring-2 ring-amber-500/60 border-amber-400 bg-amber-50/25' : 'border-slate-200 hover:bg-amber-50/30'
+          }`}
+          title="Click to filter by In Progress"
+        >
           <div className="text-[11px] font-bold text-slate-500 flex items-center justify-between">
             <span>On Bay / Servicing</span>
-            <Wrench className="w-4 h-4 text-amber-600" />
+            <div className="p-1.5 rounded-lg bg-amber-50 text-amber-600 group-hover:scale-125 group-hover:-rotate-12 transition-transform duration-300">
+              <Wrench className="w-4 h-4" />
+            </div>
           </div>
           <div className="text-2xl font-black text-amber-600 font-display mt-1">
             {stats.inProgressCount}
           </div>
-          <div className="text-[10px] text-slate-500 font-semibold mt-0.5">Active Work</div>
+          <div className="text-[10px] text-slate-500 font-semibold mt-0.5 flex items-center justify-between">
+            <span>Active Work</span>
+            <span className="opacity-0 group-hover:opacity-100 transition text-[9px] text-amber-600 font-bold">Filter →</span>
+          </div>
         </div>
 
-        <div className="bg-white border border-slate-200 p-3.5 rounded-2xl shadow-sm">
+        {/* Card 3: Ready for Pickup */}
+        <div
+          onClick={() => setSelectedStatusFilter('Ready for Delivery')}
+          className={`bg-white border rounded-2xl p-3.5 shadow-sm transition-all duration-300 cursor-pointer transform hover:-translate-y-1.5 hover:shadow-lg hover:shadow-emerald-500/15 hover:border-emerald-400 group active:scale-95 ${
+            selectedStatusFilter === 'Ready for Delivery' ? 'ring-2 ring-emerald-500/60 border-emerald-400 bg-emerald-50/25' : 'border-slate-200 hover:bg-emerald-50/30'
+          }`}
+          title="Click to filter by Ready for Pickup"
+        >
           <div className="text-[11px] font-bold text-slate-500 flex items-center justify-between">
             <span>Ready for Pickup</span>
-            <CheckCircle className="w-4 h-4 text-emerald-600" />
+            <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 group-hover:scale-125 group-hover:rotate-12 transition-transform duration-300">
+              <CheckCircle className="w-4 h-4" />
+            </div>
           </div>
           <div className="text-2xl font-black text-emerald-600 font-display mt-1">
             {stats.readyForDeliveryCount}
           </div>
-          <div className="text-[10px] text-emerald-600 font-bold mt-0.5">Washed & Polished</div>
+          <div className="text-[10px] text-emerald-600 font-bold mt-0.5 flex items-center justify-between">
+            <span>Washed & Polished</span>
+            <span className="opacity-0 group-hover:opacity-100 transition text-[9px] font-bold">Filter →</span>
+          </div>
         </div>
 
-        <div className="bg-white border border-slate-200 p-3.5 rounded-2xl shadow-sm">
+        {/* Card 4: Month Delivered */}
+        <div
+          onClick={() => setSelectedStatusFilter('Delivered')}
+          className={`bg-white border rounded-2xl p-3.5 shadow-sm transition-all duration-300 cursor-pointer transform hover:-translate-y-1.5 hover:shadow-lg hover:shadow-purple-500/15 hover:border-purple-400 group active:scale-95 ${
+            selectedStatusFilter === 'Delivered' ? 'ring-2 ring-purple-500/60 border-purple-400 bg-purple-50/25' : 'border-slate-200 hover:bg-purple-50/30'
+          }`}
+          title="Click to filter by Delivered"
+        >
           <div className="text-[11px] font-bold text-slate-500 flex items-center justify-between">
             <span>Month Delivered</span>
-            <Sparkles className="w-4 h-4 text-purple-600" />
+            <div className="p-1.5 rounded-lg bg-purple-50 text-purple-600 group-hover:scale-125 group-hover:-rotate-12 transition-transform duration-300">
+              <Sparkles className="w-4 h-4" />
+            </div>
           </div>
           <div className="text-2xl font-black text-slate-900 font-display mt-1">
             {stats.completedThisMonth}
           </div>
-          <div className="text-[10px] text-purple-600 font-bold mt-0.5">Completed</div>
+          <div className="text-[10px] text-purple-600 font-bold mt-0.5 flex items-center justify-between">
+            <span>Completed</span>
+            <span className="opacity-0 group-hover:opacity-100 transition text-[9px] font-bold">Filter →</span>
+          </div>
         </div>
 
-        <div className="bg-white border border-slate-200 p-3.5 rounded-2xl shadow-sm">
+        {/* Card 5: Revenue */}
+        <div
+          onClick={() => setViewMode('table')}
+          className="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm transition-all duration-300 cursor-pointer transform hover:-translate-y-1.5 hover:shadow-lg hover:shadow-emerald-500/20 hover:border-emerald-500 group hover:bg-emerald-50/30 active:scale-95"
+          title="Click to switch to Table / Invoices View"
+        >
           <div className="text-[11px] font-bold text-slate-500 flex items-center justify-between">
             <span>Revenue</span>
-            <FileText className="w-4 h-4 text-emerald-600" />
+            <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 group-hover:scale-125 group-hover:rotate-12 transition-transform duration-300">
+              <FileText className="w-4 h-4" />
+            </div>
           </div>
           <div className="text-xl font-black text-emerald-600 font-display mt-1">
             ₹{stats.monthlyRevenue.toLocaleString()}
           </div>
-          <div className="text-[10px] text-slate-500 font-semibold mt-0.5">Collected</div>
+          <div className="text-[10px] text-slate-500 font-semibold mt-0.5 flex items-center justify-between">
+            <span>Collected</span>
+            <span className="opacity-0 group-hover:opacity-100 transition text-[9px] text-emerald-600 font-bold">Table View →</span>
+          </div>
         </div>
 
-        <div className="bg-white border border-slate-200 p-3.5 rounded-2xl shadow-sm">
+        {/* Card 6: Low Spares Alert */}
+        <div
+          onClick={() => onNavigateTab ? onNavigateTab('inventory') : null}
+          className="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm transition-all duration-300 cursor-pointer transform hover:-translate-y-1.5 hover:shadow-lg hover:shadow-rose-500/20 hover:border-rose-400 group hover:bg-rose-50/30 active:scale-95"
+          title="Click to open Spare Parts Inventory"
+        >
           <div className="text-[11px] font-bold text-slate-500 flex items-center justify-between">
             <span>Low Spares Alert</span>
-            <AlertCircle className="w-4 h-4 text-rose-600" />
+            <div className="p-1.5 rounded-lg bg-rose-50 text-rose-600 group-hover:scale-125 group-hover:-rotate-12 transition-transform duration-300 animate-pulse">
+              <AlertCircle className="w-4 h-4" />
+            </div>
           </div>
           <div className="text-2xl font-black text-rose-600 font-display mt-1">
             {stats.lowStockItemsCount}
           </div>
-          <div className="text-[10px] text-rose-600 font-bold mt-0.5">Needs Restock</div>
+          <div className="text-[10px] text-rose-600 font-bold mt-0.5 flex items-center justify-between">
+            <span>Needs Restock</span>
+            <span className="opacity-0 group-hover:opacity-100 transition text-[9px] font-bold">Inventory →</span>
+          </div>
         </div>
       </div>
 

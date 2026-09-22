@@ -312,6 +312,7 @@ export function App() {
             onViewInvoice={(card) => setViewingInvoiceJobCard(card)}
             onUpdateStatus={handleUpdateStatus}
             searchQuery={searchQuery}
+            onNavigateTab={setCurrentTab}
           />
         )}
 
