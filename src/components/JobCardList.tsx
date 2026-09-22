@@ -21,6 +21,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { JobCard, ServiceStatus, BikeBrand, WorkshopStats } from '../types';
+import { CustomSelect } from './CustomSelect';
 
 interface JobCardListProps {
   jobCards: JobCard[];
@@ -234,31 +235,35 @@ export const JobCardList: React.FC<JobCardListProps> = ({
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
         <div className="flex flex-wrap items-center gap-2">
           {/* Status Filter */}
-          <select
-            value={selectedStatusFilter}
-            onChange={(e) => setSelectedStatusFilter(e.target.value)}
-            className="bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 font-semibold focus:outline-none focus:border-amber-500"
-          >
-            <option value="ALL">All Statuses ({jobCards.length})</option>
-            {STAGES.map(s => (
-              <option key={s.status} value={s.status}>{s.label}</option>
-            ))}
-          </select>
+          <div className="w-48">
+            <CustomSelect
+              value={selectedStatusFilter}
+              onChange={(val) => setSelectedStatusFilter(String(val))}
+              options={[
+                { value: 'ALL', label: `All Statuses (${jobCards.length})` },
+                ...STAGES.map(s => ({ value: s.status, label: s.label }))
+              ]}
+              buttonClassName="text-xs py-1.5 rounded-xl"
+            />
+          </div>
 
           {/* Brand Filter */}
-          <select
-            value={selectedBrandFilter}
-            onChange={(e) => setSelectedBrandFilter(e.target.value)}
-            className="bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 font-semibold focus:outline-none focus:border-amber-500"
-          >
-            <option value="ALL">All Brands</option>
-            <option value="Royal Enfield">Royal Enfield</option>
-            <option value="Yamaha">Yamaha</option>
-            <option value="Honda">Honda</option>
-            <option value="TVS">TVS</option>
-            <option value="KTM">KTM</option>
-            <option value="Hero">Hero</option>
-          </select>
+          <div className="w-40">
+            <CustomSelect
+              value={selectedBrandFilter}
+              onChange={(val) => setSelectedBrandFilter(String(val))}
+              options={[
+                { value: 'ALL', label: 'All Brands' },
+                { value: 'Royal Enfield', label: 'Royal Enfield' },
+                { value: 'Yamaha', label: 'Yamaha' },
+                { value: 'Honda', label: 'Honda' },
+                { value: 'TVS', label: 'TVS' },
+                { value: 'KTM', label: 'KTM' },
+                { value: 'Hero', label: 'Hero' }
+              ]}
+              buttonClassName="text-xs py-1.5 rounded-xl"
+            />
+          </div>
         </div>
 
         {/* View Switcher: Kanban vs Table */}

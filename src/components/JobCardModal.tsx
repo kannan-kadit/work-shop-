@@ -21,6 +21,7 @@ import {
   Mechanic,
   ServicePackage
 } from '../types';
+import { CustomSelect } from './CustomSelect';
 
 interface JobCardModalProps {
   isOpen: boolean;
@@ -373,15 +374,11 @@ export const JobCardModal: React.FC<JobCardModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Brand</label>
-                  <select
+                  <CustomSelect
                     value={vehicleBrand}
-                    onChange={(e) => setVehicleBrand(e.target.value as BikeBrand)}
-                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-amber-500 focus:outline-none"
-                  >
-                    {BRANDS.map(b => (
-                      <option key={b} value={b}>{b}</option>
-                    ))}
-                  </select>
+                    onChange={(val) => setVehicleBrand(val as BikeBrand)}
+                    options={BRANDS.map(b => ({ value: b, label: b }))}
+                  />
                 </div>
               </div>
               <div>
@@ -443,32 +440,30 @@ export const JobCardModal: React.FC<JobCardModalProps> = ({
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Assigned Mechanic</label>
-                <select
+                <CustomSelect
                   value={assignedMechanicId}
-                  onChange={(e) => setAssignedMechanicId(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-amber-500 focus:outline-none"
-                >
-                  {mechanics.map(m => (
-                    <option key={m.id} value={m.id}>
-                      {m.name} ({m.specialty.split(' ')[0]})
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => setAssignedMechanicId(String(val))}
+                  options={mechanics.map(m => ({
+                    value: m.id,
+                    label: `${m.name} (${m.specialty.split(' ')[0]})`,
+                    sublabel: m.specialty,
+                    badge: m.activeJobs > 0 ? `${m.activeJobs} Active` : 'Available'
+                  }))}
+                />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Service Package</label>
-                <select
+                <CustomSelect
                   value={servicePackage}
-                  onChange={(e) => handleSelectPackage(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-amber-500 focus:outline-none"
-                >
-                  {servicePackages.map(p => (
-                    <option key={p.id} value={p.title}>
-                      {p.title} - ₹{p.price}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => handleSelectPackage(String(val))}
+                  options={servicePackages.map(p => ({
+                    value: p.title,
+                    label: `${p.title} - ₹${p.price}`,
+                    sublabel: p.description,
+                    badge: `₹${p.price}`
+                  }))}
+                />
               </div>
             </div>
           </div>
@@ -598,18 +593,23 @@ export const JobCardModal: React.FC<JobCardModalProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 border-t border-slate-200">
               {/* Add Spare Part */}
               <div className="flex gap-2">
-                <select
-                  value={selectedPartId}
-                  onChange={(e) => setSelectedPartId(e.target.value)}
-                  className="flex-1 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-900 focus:border-amber-500 focus:outline-none"
-                >
-                  <option value="">-- Add Part from Inventory --</option>
-                  {spareParts.map(p => (
-                    <option key={p.id} value={p.id} disabled={p.stock <= 0}>
-                      {p.name} (₹{p.sellingPrice}) - Stock: {p.stock}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex-1">
+                  <CustomSelect
+                    value={selectedPartId}
+                    onChange={(val) => setSelectedPartId(String(val))}
+                    placeholder="-- Add Part from Inventory --"
+                    options={[
+                      { value: '', label: '-- Add Part from Inventory --' },
+                      ...spareParts.map(p => ({
+                        value: p.id,
+                        label: `${p.name} (₹${p.sellingPrice})`,
+                        sublabel: `Stock: ${p.stock} | Rack: ${p.rackLocation}`,
+                        disabled: p.stock <= 0,
+                        badge: p.stock <= 0 ? 'Out of Stock' : `Qty: ${p.stock}`
+                      }))
+                    ]}
+                  />
+                </div>
                 <input
                   type="number"
                   min="1"
@@ -621,7 +621,7 @@ export const JobCardModal: React.FC<JobCardModalProps> = ({
                 <button
                   type="button"
                   onClick={handleAddPartItem}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm shrink-0"
                 >
                   + Add Part
                 </button>
@@ -716,15 +716,16 @@ export const JobCardModal: React.FC<JobCardModalProps> = ({
                 </div>
                 <div>
                   <label className="text-slate-600 font-semibold block mb-0.5">GST Rate (%)</label>
-                  <select
+                  <CustomSelect
                     value={gstRate}
-                    onChange={(e) => setGstRate(Number(e.target.value))}
-                    className="bg-slate-50 border border-slate-300 rounded px-2 py-1 text-slate-900 font-semibold"
-                  >
-                    <option value={0}>0% (No GST)</option>
-                    <option value={18}>18% (Standard GST)</option>
-                    <option value={28}>28% (Lubricants / Auto)</option>
-                  </select>
+                    onChange={(val) => setGstRate(Number(val))}
+                    className="w-48"
+                    options={[
+                      { value: 0, label: '0% (No GST)' },
+                      { value: 18, label: '18% (Standard GST)' },
+                      { value: 28, label: '28% (Lubricants / Auto)' }
+                    ]}
+                  />
                 </div>
               </div>
 

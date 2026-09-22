@@ -4,18 +4,38 @@
   :root {
     --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-display: 'Space Grotesk', sans-serif;
+    color-scheme: light !important;
   }
 
-  body {
+  html, body {
     font-family: var(--font-sans);
     background-color: #f8fafc;
     color: #0f172a;
     overflow-x: hidden;
+    color-scheme: light !important;
   }
 
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
     color: #0f172a;
+  }
+
+  /* Force pure white background and solid black text on all dropdowns and option lists */
+  select, option, optgroup, input, textarea {
+    color-scheme: light !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  option {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-weight: 600;
+  }
+
+  select:focus, input:focus, textarea:focus {
+    background-color: #ffffff !important;
+    color: #000000 !important;
   }
 }
 

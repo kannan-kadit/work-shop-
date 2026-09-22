@@ -9,6 +9,7 @@ import {
   Navigation
 } from 'lucide-react';
 import { BreakdownRequest, Mechanic } from '../types';
+import { CustomSelect } from './CustomSelect';
 
 interface BreakdownManagerProps {
   requests: BreakdownRequest[];
@@ -110,18 +111,22 @@ export const BreakdownManager: React.FC<BreakdownManagerProps> = ({
                 <div className="space-y-2 pt-2 border-t border-slate-100">
                   <label className="block text-[10px] text-slate-600 font-semibold">Select Mechanic to Dispatch:</label>
                   <div className="flex gap-2">
-                    <select
-                      value={selectedMechanicMap[req.id] || mechanics[0]?.id}
-                      onChange={(e) => setSelectedMechanicMap({ ...selectedMechanicMap, [req.id]: e.target.value })}
-                      className="flex-1 bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs text-slate-900 font-medium focus:outline-none"
-                    >
-                      {mechanics.map(m => (
-                        <option key={m.id} value={m.id}>{m.name}</option>
-                      ))}
-                    </select>
+                    <div className="flex-1">
+                      <CustomSelect
+                        value={selectedMechanicMap[req.id] || mechanics[0]?.id}
+                        onChange={(val) => setSelectedMechanicMap({ ...selectedMechanicMap, [req.id]: String(val) })}
+                        buttonClassName="text-xs py-1.5 rounded-lg"
+                        options={mechanics.map(m => ({
+                          value: m.id,
+                          label: m.name,
+                          sublabel: m.specialty,
+                          badge: m.activeJobs > 0 ? `${m.activeJobs} Active` : 'Available'
+                        }))}
+                      />
+                    </div>
                     <button
                       onClick={() => handleDispatch(req.id)}
-                      className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1 shadow-sm"
+                      className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1 shadow-sm shrink-0"
                     >
                       <Navigation className="w-3.5 h-3.5" />
                       <span>Dispatch</span>

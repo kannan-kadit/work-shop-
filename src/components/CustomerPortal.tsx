@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { JobCard, ServicePackage, BreakdownRequest } from '../types';
 import { WORKSHOP_DETAILS } from '../data/mockData';
+import { CustomSelect } from './CustomSelect';
 
 interface CustomerPortalProps {
   jobCards: JobCard[];
@@ -553,17 +554,17 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
 
                 <div>
                   <label className="block text-slate-700 font-semibold mb-1">Select Service Package</label>
-                  <select
+                  <CustomSelect
                     value={bPackage}
-                    onChange={(e) => setBPackage(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 focus:border-amber-500 focus:outline-none"
-                  >
-                    {servicePackages.map(p => (
-                      <option key={p.id} value={p.title}>
-                        {p.title} (₹{p.price})
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(val) => setBPackage(String(val))}
+                    buttonClassName="rounded-xl p-3"
+                    options={servicePackages.map(p => ({
+                      value: p.title,
+                      label: `${p.title} (₹${p.price})`,
+                      sublabel: p.description,
+                      badge: `₹${p.price}`
+                    }))}
+                  />
                 </div>
               </div>
 

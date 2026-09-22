@@ -9,6 +9,7 @@ import {
   X
 } from 'lucide-react';
 import { SparePart, BikeBrand } from '../types';
+import { CustomSelect } from './CustomSelect';
 
 interface InventoryManagerProps {
   spareParts: SparePart[];
@@ -396,15 +397,11 @@ export const InventoryManager: React.FC<InventoryManagerProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Category</label>
-                  <select
+                  <CustomSelect
                     value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value as SparePart['category'])}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-900 focus:border-amber-500 focus:outline-none"
-                  >
-                    {CATEGORIES.filter(c => c !== 'ALL').map(c => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
+                    onChange={(val) => setNewCategory(val as SparePart['category'])}
+                    options={CATEGORIES.filter(c => c !== 'ALL').map(c => ({ value: c, label: c }))}
+                  />
                 </div>
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Rack Location (Kottar)</label>
